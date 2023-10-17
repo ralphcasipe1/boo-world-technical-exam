@@ -1,15 +1,27 @@
 'use strict';
 
 const express = require('express');
-const app = express();
-const port =  process.env.PORT || 3000;
+const { connect } = require('./config/setup-test-db')
 
-// set the view engine to ejs
-app.set('view engine', 'ejs');
+async function startApplication() {
+  const app = express();
 
-// routes
-app.use('/', require('./routes/profile')());
+  (async () => connect())()
 
-// start server
-const server = app.listen(port);
-console.log('Express started. Listening on %s', port);
+  const port =  process.env.PORT || 3000;
+
+  // set the view engine to ejs
+  app.set('view engine', 'ejs');
+
+  // middlewares
+  app.use(express.json())
+
+  // routes
+  app.use('/', require('./routes/profile')());
+
+  return app
+}
+
+module.exports = {
+  startApplication,
+}
