@@ -1,0 +1,9 @@
+- [X] - Connect to mongo-memory-server
+- [X] - Add node-dev for developer server
+- [X] - Add ajv validator
+- [X] - Add a validator
+- [X] - Add integration test on Creat Profile
+- [ ] - Add the following test cases
+  - [ ] - Invalid Data
+  - [ ] - Response when success
+- [ ] - Design the voting strategy and commenting
