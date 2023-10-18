@@ -18,7 +18,8 @@ async function startApplication() {
 
   // routes
   app.use('/', require('./routes/profile')());
-
+  app.use('/', require('./routes/comment')());
+  
   return app
 }
 
