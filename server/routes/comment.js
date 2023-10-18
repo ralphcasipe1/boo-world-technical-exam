@@ -38,7 +38,6 @@ module.exports = function() {
       .findById(newComment.id)
       .populate('commentedTo')
       .populate('commentedBy')
-      // .populate('numberOfLikes')
       .exec()
       
     response.status(HTTP_STATUS_CODES.CREATED).json({
@@ -110,22 +109,43 @@ module.exports = function() {
   });
   
   router.post('/comments/:commentId/likes', async function(request, response) {
-    const commentLike= await CommentLikeModel.create({
-      // NOTE: This should be supplied for the logged in user
-      // For now we're just going to use the request's body
+    const foundCommentLike = await CommentLikeModel.findOne({
       likedBy: request.body.likedBy,
       commentId: request.params.commentId,
     })
-      
-    return response.status(HTTP_STATUS_CODES.CREATED).json({
-      data: { 
-        commentLike,
-      }
-    })
+
+    if (foundCommentLike) {
+      const commentLike = await CommentLikeModel.findOneAndDelete({
+        likedBy: request.body.likedBy,
+        commentId: request.params.commentId,
+      })
+
+      return response.status(HTTP_STATUS_CODES.CREATED).json({
+        data: { 
+          commentLike,
+        }
+      })
+    } else {
+      const commentLike= await CommentLikeModel.create({
+        // NOTE: This should be supplied for the logged in user
+        // For now we're just going to use the request's body
+        likedBy: request.body.likedBy,
+        commentId: request.params.commentId,
+      })
+        
+      return response.status(HTTP_STATUS_CODES.CREATED).json({
+        data: { 
+          commentLike,
+        }
+      })
+    }
   });
 
   router.get('/comments/:commentId/likes', async function(request, response) {
-    const commentLikes= await CommentLikeModel.find()
+    const commentLikes= await CommentLikeModel
+      .find()
+      .populate('commentId')
+      .populate('likedBy')
       
     return response.status(HTTP_STATUS_CODES.OK).json({
       data: { 
