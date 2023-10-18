@@ -63,36 +63,30 @@ module.exports = {
       enum: Object.values(ENNEAGRAM)
     },
   
-    // TODO: ENUM
     variant: {
       type: String,
       required: true,
     },
   
-    // TODO: ENUM
     tritype: {
       type: String,
       required: true,
     },
     
-    // TODO: ENUM
     socionics: {
       type: String,
       required: true,
     },
-    // TODO: ENUM
     sloan: {
       type: String,
       required: true,
     },
     
-    // TODO: ENUM
     psyche: {
       type: String,
       required: true,
     },
   
-    // TODO: Validation of URL
     image: {
       type: String,
       required: true,
