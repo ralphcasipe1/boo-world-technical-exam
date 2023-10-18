@@ -4,8 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
-    "serve": "node-dev app.js",
+    "start": "node main.js",
+    "serve": "node-dev main.js",
     "test": "jest"
   },
   "keywords": [],
