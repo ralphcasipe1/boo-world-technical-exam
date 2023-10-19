@@ -69,7 +69,7 @@ module.exports = {
     },
   
     tritype: {
-      type: String,
+      type: Number,
       required: true,
     },
     

@@ -5,6 +5,7 @@ const Ajv = require('ajv');
 
 const { ProfileModel } = require('../models/profile')
 const { HTTP_STATUS_CODES } = require('../utilities/http-status-code');
+const { status } = require('express/lib/response');
 
 const ajv = new Ajv()
 
@@ -87,11 +88,14 @@ module.exports = function() {
 
   router.post('/', async function (request, response) {
     if (!validate(request.body)) {
-      console.log(validate.errors)
-      throw new Error(validate.errors)
+      return response.status(HTTP_STATUS_CODES.UNPROCESSABLE_ENTITY).json({
+        errors: validate.errors.map(error => ({ message: error.message }))
+      })
     }
 
-    const profile = await ProfileModel.create(request.body)
+    const newProfile = await ProfileModel.create(request.body)
+    const profile = await ProfileModel.findById(newProfile.id)
+      .select({ __v: 0  })
 
     response.status(HTTP_STATUS_CODES.CREATED).json({
       data: { profile }

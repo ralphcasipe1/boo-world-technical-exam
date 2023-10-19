@@ -7,6 +7,7 @@ const { CommentModel, CommentLikeModel } = require('../models/comment');
 const { ProfileModel } = require('../models/profile');
 const { HTTP_STATUS_CODES } = require('../utilities/http-status-code');
 
+// TODO: Handle errors
 module.exports = function() {
   router.post('/users/:userId/comments', async function(request, response) {
     const profile = await ProfileModel.exists({ _id: request.params.userId }).exec()
@@ -42,7 +43,7 @@ module.exports = function() {
       
     response.status(HTTP_STATUS_CODES.CREATED).json({
       data: { 
-        comment: foundComment.toJSON(),
+        comment: foundComment,
       }
     })
   });
