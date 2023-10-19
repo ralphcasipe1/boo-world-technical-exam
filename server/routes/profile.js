@@ -4,8 +4,9 @@ const router = require('express').Router();
 const Ajv = require('ajv');
 
 const { ProfileModel } = require('../models/profile')
+const { createProfile } = require('../controllers/profile')
 const { HTTP_STATUS_CODES } = require('../utilities/http-status-code');
-const { status } = require('express/lib/response');
+
 
 const ajv = new Ajv()
 
@@ -93,9 +94,7 @@ module.exports = function() {
       })
     }
 
-    const newProfile = await ProfileModel.create(request.body)
-    const profile = await ProfileModel.findById(newProfile.id)
-      .select({ __v: 0  })
+    const profile = await createProfile(request.body)
 
     response.status(HTTP_STATUS_CODES.CREATED).json({
       data: { profile }
