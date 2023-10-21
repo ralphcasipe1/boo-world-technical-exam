@@ -5,7 +5,7 @@ const { MBTI, ENNEAGRAM } = require('../../models/profile')
 const mbtis = Object.values(MBTI)
 const enneagrams = Object.values(ENNEAGRAM)
 
-module.exports = () => ({
+module.exports = (overrides) => ({
   name: faker.person.fullName(),
   description: faker.lorem.sentence(),
   mbti: mbtis[faker.number.int({ min: 0, max: mbtis.length - 1 })],
@@ -16,4 +16,5 @@ module.exports = () => ({
   sloan: 'RCOEN',
   psyche: 'FEVL',
   image: faker.internet.avatar(),
+  ...overrides,
 })

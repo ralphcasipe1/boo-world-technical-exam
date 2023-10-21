@@ -6,6 +6,7 @@ const { Types: { ObjectId } } = require('mongoose')
 const { CommentModel, CommentLikeModel } = require('../models/comment');
 const { ProfileModel } = require('../models/profile');
 const { HTTP_STATUS_CODES } = require('../utilities/http-status-code');
+const { createComment } = require('../controllers/comment');
 
 // TODO: Handle errors
 module.exports = function() {
@@ -18,32 +19,11 @@ module.exports = function() {
       })
     }
 
-    const {
-      commentedBy,
-      title,
-      comment,
-      personalitySystems,
-    } = request.body
-
-    const newComment = await CommentModel.create({
-      // NOTE: This should be supplied for the logged in user
-      // For now we're just going to use the request's body
-      commentedBy,
-      commentedTo: request.params.userId,
-      title,
-      comment,
-      personalitySystems,
-    })
-
-    const foundComment = await CommentModel
-      .findById(newComment.id)
-      .populate('commentedTo')
-      .populate('commentedBy')
-      .exec()
+    const comment = await createComment(request.params.userId, request.body)
       
     response.status(HTTP_STATUS_CODES.CREATED).json({
       data: { 
-        comment: foundComment,
+        comment,
       }
     })
   });
