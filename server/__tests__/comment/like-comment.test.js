@@ -6,16 +6,24 @@ const { startApplication } = require('../../app')
 const generateFakeProfile = require('../helpers/profile')
 const generateFakeComment = require('../helpers/comment')
 const { createProfile } = require('../../controllers/profile');
-const { createComment } = require('../../controllers/comment')
+const { createComment, findOneCommentLike } = require('../../controllers/comment')
 
 describe('Like User\'s Comment - POST /comments/:commentId/likes', () => {
   let app
 
+  const now = new Date()
+  
   beforeAll(async () => {
+    jest.useFakeTimers({
+      now,
+      doNotFake: ['nextTick']
+    })
+
     app = (await startApplication()).listen(await getPort({ random: true }))
   })
 
   afterAll(async () => {
+    jest.useRealTimers()
     app.close()
     await disconnect()
   })
@@ -34,5 +42,25 @@ describe('Like User\'s Comment - POST /comments/:commentId/likes', () => {
       })
 
     expect(response.status).toEqual(201)
+  })
+
+  it('should return a correct response when successfuly like the user\'s comment', async () => {
+    const profile = await createProfile(generateFakeProfile())
+    
+    const newComment = await createComment(profile.id, generateFakeComment({
+      commentedBy: profile.id,
+    }))
+
+    const response = await request(app)
+      .post(`/comments/${newComment.id}/likes`)
+      .send({
+        likedBy: profile.id,
+      })
+  
+    const commentLike = await findOneCommentLike(newComment.id, profile.id)
+
+    expect(response.body.data).toStrictEqual({
+      commentLike
+    })
   })
 })

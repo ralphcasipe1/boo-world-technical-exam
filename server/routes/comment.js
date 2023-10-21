@@ -6,7 +6,7 @@ const { Types: { ObjectId } } = require('mongoose')
 const { CommentModel, CommentLikeModel } = require('../models/comment');
 const { ProfileModel } = require('../models/profile');
 const { HTTP_STATUS_CODES } = require('../utilities/http-status-code');
-const { createComment } = require('../controllers/comment');
+const { createComment, findOneCommentLikeById } = require('../controllers/comment');
 
 // TODO: Handle errors
 module.exports = function() {
@@ -69,6 +69,25 @@ module.exports = function() {
             as: 'commentedTo'
           },
         },
+        { $unwind: '$commentedBy' },
+        { $unwind: '$commentedTo' },
+        {
+          $set: {
+            id: '$_id',
+            'commentedBy.id': '$commentedBy._id',
+            'commentedTo.id': '$commentedTo._id',
+          }
+        },
+        { 
+          $unset: [
+            '__v',
+            '_id',
+            'commentedBy._id',
+            'commentedBy.__v',
+            'commentedTo._id',
+            'commentedTo.__v',
+          ] 
+        },
         {
           $addFields: {
             numberOfLikes: { $size: '$likes' }
@@ -77,7 +96,7 @@ module.exports = function() {
       ])
         .sort(request.query.sort || 'createdAt')
         .exec()
-  
+      
       response.status(HTTP_STATUS_CODES.OK).json({
         data: {
           comments,
@@ -107,16 +126,17 @@ module.exports = function() {
         }
       })
     } else {
-      const commentLike= await CommentLikeModel.create({
+      const newCommentLike= await CommentLikeModel.create({
         // NOTE: This should be supplied for the logged in user
         // For now we're just going to use the request's body
         likedBy: request.body.likedBy,
         commentId: request.params.commentId,
       })
-        
+      const foundNewCommentLike = await findOneCommentLikeById(newCommentLike.id)
+
       return response.status(HTTP_STATUS_CODES.CREATED).json({
         data: { 
-          commentLike,
+          commentLike: foundNewCommentLike,
         }
       })
     }

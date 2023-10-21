@@ -91,6 +91,17 @@ module.exports = {
       type: String,
       required: true,
     },
+  }, {
+    toObject: { virtuals: true },
+    toJSON: {
+      virtuals: true,
+      transform: function(doc, ret) {
+        ret.id = ret.id
+        
+        delete ret.__v
+        delete ret._id
+      },
+    },
   })),
   MBTI,
   ENNEAGRAM,

@@ -1,4 +1,4 @@
-const { CommentModel } = require('../models/comment')
+const { CommentModel, CommentLikeModel } = require('../models/comment')
 
 module.exports = {
   async createComment(commentTo, data) {
@@ -25,7 +25,28 @@ module.exports = {
       .populate('commentedTo')
       .populate('commentedBy')
       .exec()
-      
-    return populatedNewComment
+
+    return populatedNewComment.toJSON()
+  },
+
+  async findOneCommentLikeById(commentLikeId) {
+    const commentLike = await CommentLikeModel.findById(commentLikeId)
+        .populate('commentId', 'title comment personalitySystems')
+        .populate('likedBy')
+        .exec()
+
+    return commentLike.toJSON()
+  },
+
+  async findOneCommentLike(commentId, likedBy) {
+    const commentLike = await CommentLikeModel.findOne({
+      commentId,
+      likedBy
+    })
+      .populate('commentId', 'title comment personalitySystems')
+      .populate('likedBy')
+      .exec()
+
+    return commentLike.toJSON()
   }
 }

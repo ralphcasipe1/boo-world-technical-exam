@@ -32,8 +32,8 @@ describe('CreateProfile - POST /', () => {
       .post('/')
       .send(profile)
 
-    expect(omit(['_id'], response.body.data.profile)).toStrictEqual(profile)
-    expect(response.body.data.profile).toHaveProperty('_id')
+    expect(omit(['id'], response.body.data.profile)).toStrictEqual(profile)
+    expect(response.body.data.profile).toHaveProperty('id')
   })
 
   it('should return 422 when the is an invalid body', async () => {

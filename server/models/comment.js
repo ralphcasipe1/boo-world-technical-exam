@@ -11,6 +11,16 @@ const commentLikeSchema = new Schema({
     required: true,
     ref: 'Profile',
   },
+}, {
+  toObject: { virtuals: true },
+  toJSON: {
+    virtuals: true,
+    transform: function(doc, ret) {
+      ret.id = ret.id
+
+      delete ret._id
+    }
+  },
 })
 
 const commentSchema = new Schema({
@@ -42,7 +52,16 @@ const commentSchema = new Schema({
   },
 }, {
   toObject: { virtuals: true },
-  toJSON: { virtuals: true },
+  toJSON: {
+    virtuals: true,
+
+    transform: function(doc, ret) {
+      ret.id = ret.id
+
+      delete ret.__v
+      delete ret._id
+    }
+  },
   timestamps: true,
 })
 
